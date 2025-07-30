@@ -1,0 +1,187 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            lib_name: librust_add.so
+            archive_name: rust-add-linux-x86_64.tar.gz
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            lib_name: librust_add.dylib
+            archive_name: rust-add-macos-x86_64.tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            lib_name: librust_add.dylib
+            archive_name: rust-add-macos-aarch64.tar.gz
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            lib_name: rust_add.dll
+            archive_name: rust-add-windows-x86_64.zip
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        targets: ${{ matrix.target }}
+
+    - name: Install Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.21'
+
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+
+    - name: Build Rust library
+      run: |
+        cargo build --release --target ${{ matrix.target }}
+
+    - name: Copy library file (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        mkdir -p dist
+        cp target/${{ matrix.target }}/release/${{ matrix.lib_name }} dist/
+        cp *.go dist/
+        cp go.mod dist/
+        cp README.md dist/
+
+    - name: Copy library file (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        mkdir dist
+        copy target\${{ matrix.target }}\release\${{ matrix.lib_name }} dist\
+        copy *.go dist\
+        copy go.mod dist\
+        copy README.md dist\
+
+    - name: Run tests (Unix)
+      if: runner.os != 'Windows' && matrix.target != 'aarch64-apple-darwin'
+      run: |
+        cd dist
+        go test -v
+
+    - name: Create archive (Unix)
+      if: runner.os != 'Windows'
+      run: |
+        cd dist
+        tar -czf ../${{ matrix.archive_name }} *
+
+    - name: Create archive (Windows)
+      if: runner.os == 'Windows'
+      run: |
+        cd dist
+        7z a ..\${{ matrix.archive_name }} *
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.archive_name }}
+        path: ${{ matrix.archive_name }}
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v3
+      with:
+        path: artifacts
+
+    - name: Display structure of downloaded files
+      run: ls -la artifacts/
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: Release ${{ github.ref_name }}
+        body: |
+          ## 发布说明
+          
+          这个版本包含了以下平台的预编译库：
+          
+          - Linux x86_64
+          - macOS x86_64 (Intel)
+          - macOS aarch64 (Apple Silicon)
+          - Windows x86_64
+          
+          ## 使用方法
+          
+          1. 下载对应平台的压缩包
+          2. 解压到你的Go项目目录
+          3. 运行 `go mod tidy` 安装依赖
+          4. 使用 `import` 导入包
+          
+          ## 变更日志
+          
+          请查看提交历史了解详细变更。
+        draft: false
+        prerelease: false
+
+    - name: Upload Linux Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/rust-add-linux-x86_64.tar.gz/rust-add-linux-x86_64.tar.gz
+        asset_name: rust-add-linux-x86_64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload macOS Intel Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/rust-add-macos-x86_64.tar.gz/rust-add-macos-x86_64.tar.gz
+        asset_name: rust-add-macos-x86_64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload macOS ARM Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/rust-add-macos-aarch64.tar.gz/rust-add-macos-aarch64.tar.gz
+        asset_name: rust-add-macos-aarch64.tar.gz
+        asset_content_type: application/gzip
+
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: artifacts/rust-add-windows-x86_64.zip/rust-add-windows-x86_64.zip
+        asset_name: rust-add-windows-x86_64.zip
+        asset_content_type: application/zip
