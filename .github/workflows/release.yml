@@ -17,14 +17,17 @@ jobs:
             target: x86_64-unknown-linux-gnu
             lib_name: librust_add.so
             archive_name: rust-add-linux-x86_64.tar.gz
-          - os: macos-latest
+            can_test: true
+          - os: macos-13  # Intel runner
             target: x86_64-apple-darwin
             lib_name: librust_add.dylib
             archive_name: rust-add-macos-x86_64.tar.gz
-          - os: macos-latest
+            can_test: true
+          - os: macos-latest  # ARM64 runner
             target: aarch64-apple-darwin
             lib_name: librust_add.dylib
             archive_name: rust-add-macos-aarch64.tar.gz
+            can_test: true
 
     steps:
     - uses: actions/checkout@v4
@@ -61,7 +64,7 @@ jobs:
         cp README.md dist/
 
     - name: Set library path and run tests
-      if: matrix.target != 'aarch64-apple-darwin'
+      if: matrix.can_test
       run: |
         cd dist
         # 设置库路径环境变量

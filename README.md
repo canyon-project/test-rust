@@ -20,7 +20,7 @@
 
 ### 构建步骤
 
-1. 构建Rust库：
+1. 构建Rust库（自动检测架构）：
 ```bash
 chmod +x build.sh
 ./build.sh

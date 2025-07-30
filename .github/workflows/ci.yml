@@ -12,7 +12,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+          - os: macos-13      # Intel runner
+          - os: macos-latest  # ARM64 runner
 
     steps:
     - uses: actions/checkout@v4
