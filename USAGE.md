@@ -59,7 +59,7 @@ func main() {
 ```bash
 # 克隆仓库
 git clone https://github.com/canyon-project/test-rust
-cd rust-add-go
+cd test-rust
 
 # 构建
 ./build.sh
