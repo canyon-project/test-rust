@@ -3,16 +3,12 @@
 Cargo.lock
 
 # Go
-*.exe
-*.exe~
-*.dll
 *.so
 *.dylib
 
 # 动态库文件
 librust_add.so
 librust_add.dylib
-rust_add.dll
 
 # 测试二进制文件
 *.test

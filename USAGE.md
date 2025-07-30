@@ -9,7 +9,6 @@
 - **Linux**: `rust-add-linux-x86_64.tar.gz`
 - **macOS Intel**: `rust-add-macos-x86_64.tar.gz`
 - **macOS Apple Silicon**: `rust-add-macos-aarch64.tar.gz`
-- **Windows**: `rust-add-windows-x86_64.zip`
 
 ### 2. 解压并使用
 
@@ -18,10 +17,12 @@
 tar -xzf rust-add-*.tar.gz
 cd rust-add-*
 
-# Windows
-# 解压zip文件到目录
-
-# 测试
+# 设置库路径并测试
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    export DYLD_LIBRARY_PATH=.:$DYLD_LIBRARY_PATH
+else
+    export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH
+fi
 go test -v
 ```
 
@@ -134,6 +135,10 @@ CGO_LDFLAGS="-v" go build -x
 # 运行时显示库加载信息
 DYLD_PRINT_LIBRARIES=1 ./your-program  # macOS
 LD_DEBUG=libs ./your-program           # Linux
+
+# 设置库路径
+export DYLD_LIBRARY_PATH=.:$DYLD_LIBRARY_PATH  # macOS
+export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH      # Linux
 ```
 
 ## 性能考虑

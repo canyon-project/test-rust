@@ -28,7 +28,14 @@ chmod +x build.sh
 
 2. 运行Go测试：
 ```bash
-go test
+# 方式一：使用便捷脚本（推荐）
+chmod +x run_tests.sh
+./run_tests.sh
+
+# 方式二：手动设置环境变量
+export DYLD_LIBRARY_PATH=.:$DYLD_LIBRARY_PATH  # macOS
+export LD_LIBRARY_PATH=.:$LD_LIBRARY_PATH      # Linux
+go test -v
 ```
 
 ## 使用方法
@@ -85,7 +92,6 @@ cp librust_add.* /path/to/your/project/
 3. 不同操作系统的动态库文件名不同：
    - macOS: `librust_add.dylib`
    - Linux: `librust_add.so`
-   - Windows: `rust_add.dll`
 
 ## 发布流程
 
@@ -105,8 +111,7 @@ cp librust_add.* /path/to/your/project/
 
 - Linux x86_64
 - macOS x86_64 (Intel)
-- macOS aarch64 (Apple Silicon)  
-- Windows x86_64
+- macOS aarch64 (Apple Silicon)
 
 ## 文档
 
