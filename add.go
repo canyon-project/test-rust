@@ -1,7 +1,9 @@
 package rustadd
 
 /*
-#cgo LDFLAGS: -L. -lrust_add
+#cgo linux,amd64 LDFLAGS: -L${SRCDIR}/lib/linux-x86_64 -lrust_add
+#cgo darwin,amd64 LDFLAGS: -L${SRCDIR}/lib/darwin-x86_64 -lrust_add
+#cgo darwin,arm64 LDFLAGS: -L${SRCDIR}/lib/darwin-arm64 -lrust_add
 #include <stdlib.h>
 
 int add(int a, int b);

@@ -6,9 +6,13 @@ Cargo.lock
 *.so
 *.dylib
 
-# 动态库文件
-librust_add.so
-librust_add.dylib
+# 动态库文件（根目录的临时文件）
+/librust_add.so
+/librust_add.dylib
+
+# 保留lib目录中的预编译库
+!lib/*/librust_add.so
+!lib/*/librust_add.dylib
 
 # 测试二进制文件
 *.test

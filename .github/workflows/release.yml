@@ -86,9 +86,62 @@ jobs:
         name: ${{ matrix.archive_name }}
         path: ${{ matrix.archive_name }}
 
+  update-libs:
+    name: Update precompiled libraries
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: artifacts
+
+    - name: Extract and organize libraries
+      run: |
+        # 创建lib目录结构
+        mkdir -p lib/{linux-x86_64,darwin-x86_64,darwin-arm64}
+        
+        # 解压并复制库文件
+        cd artifacts
+        
+        # Linux
+        tar -xzf rust-add-linux-x86_64.tar.gz/rust-add-linux-x86_64.tar.gz
+        cp librust_add.so ../lib/linux-x86_64/
+        rm -rf *
+        
+        # macOS x86_64
+        tar -xzf rust-add-macos-x86_64.tar.gz/rust-add-macos-x86_64.tar.gz
+        cp librust_add.dylib ../lib/darwin-x86_64/
+        rm -rf *
+        
+        # macOS ARM64
+        tar -xzf rust-add-macos-aarch64.tar.gz/rust-add-macos-aarch64.tar.gz
+        cp librust_add.dylib ../lib/darwin-arm64/
+        
+        cd ..
+        ls -la lib/*/
+
+    - name: Commit precompiled libraries
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add lib/
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update precompiled libraries for ${{ github.ref_name }}"
+          git push
+        fi
+
   release:
     name: Create Release
-    needs: build
+    needs: [build, update-libs]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/')
     
