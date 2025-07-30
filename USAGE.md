@@ -4,7 +4,7 @@
 
 ### 1. 下载预编译版本（推荐）
 
-从 [Releases页面](https://github.com/your-username/rust-add-go/releases) 下载对应平台的文件：
+从 [Releases页面](https://github.com/canyon-project/test-rust/releases) 下载对应平台的文件：
 
 - **Linux**: `rust-add-linux-x86_64.tar.gz`
 - **macOS Intel**: `rust-add-macos-x86_64.tar.gz`
@@ -32,7 +32,7 @@ package main
 
 import (
     "fmt"
-    rustadd "github.com/your-username/rust-add-go"
+    rustadd "github.com/canyon-project/test-rust"
 )
 
 func main() {
@@ -58,7 +58,7 @@ func main() {
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/rust-add-go
+git clone https://github.com/canyon-project/test-rust
 cd rust-add-go
 
 # 构建

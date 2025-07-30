@@ -1,7 +1,7 @@
 # Rust Add FFI for Go
 
-[![CI](https://github.com/your-username/rust-add-go/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/rust-add-go/actions/workflows/ci.yml)
-[![Release](https://github.com/your-username/rust-add-go/actions/workflows/release.yml/badge.svg)](https://github.com/your-username/rust-add-go/actions/workflows/release.yml)
+[![CI](https://github.com/canyon-project/test-rust/actions/workflows/ci.yml/badge.svg)](https://github.com/canyon-project/test-rust/actions/workflows/ci.yml)
+[![Release](https://github.com/canyon-project/test-rust/actions/workflows/release.yml/badge.svg)](https://github.com/canyon-project/test-rust/actions/workflows/release.yml)
 
 这是一个通过FFI将Rust函数暴露给Go语言使用的示例项目。
 
@@ -35,7 +35,7 @@ go test
 
 ### 方式一：使用预编译的Release版本（推荐）
 
-1. 从 [Releases页面](https://github.com/your-username/rust-add-go/releases) 下载对应平台的压缩包
+1. 从 [Releases页面](https://github.com/canyon-project/test-rust/releases) 下载对应平台的压缩包
 2. 解压到你的Go项目目录
 3. 在你的Go代码中导入：
 
@@ -44,7 +44,7 @@ package main
 
 import (
     "fmt"
-    rustadd "github.com/your-username/rust-add-go"
+    rustadd "github.com/canyon-project/test-rust"
 )
 
 func main() {
@@ -61,14 +61,14 @@ func main() {
 在你的Go项目中：
 
 ```bash
-go get github.com/your-username/rust-add-go
+go get github.com/canyon-project/test-rust
 ```
 
 然后需要先构建Rust库：
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/rust-add-go
+git clone https://github.com/canyon-project/test-rust
 cd rust-add-go
 
 # 构建

@@ -1,4 +1,4 @@
-module github.com/your-username/rust-add-go
+module github.com/canyon-project/test-rust
 
 go 1.21
 

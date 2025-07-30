@@ -2,7 +2,7 @@ package main
 
 import (
     "fmt"
-    rustadd "github.com/your-username/rust-add-go"
+    rustadd "github.com/canyon-project/test-rust"
 )
 
 func main() {

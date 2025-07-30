@@ -69,4 +69,4 @@ git push origin "$VERSION"
 
 echo "✅ 发布完成！"
 echo "GitHub Actions将自动构建并创建release"
-echo "查看进度: https://github.com/your-username/rust-add-go/actions"
+echo "查看进度: https://github.com/canyon-project/test-rust/actions"
